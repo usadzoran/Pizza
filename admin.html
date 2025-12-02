@@ -4,184 +4,84 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Admin</title>
-
 <style>
-    body {
-        margin: 0; padding: 0;
-        background: #f5f5f5;
-        font-family: Arial;
-    }
-    h1 {
-        background: #ff3d00;
-        color: white;
-        text-align: center;
-        padding: 15px;
-        margin: 0;
-    }
-    section {
-        background: white;
-        margin: 15px;
-        padding: 15px;
-        border-radius: 12px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    input, select {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        margin-top: 8px;
-    }
-    .btn {
-        width: 100%;
-        margin-top: 10px;
-        padding: 14px;
-        background: #ff3d00;
-        border: none;
-        color: white;
-        border-radius: 8px;
-        font-size: 18px;
-        cursor: pointer;
-    }
-    .btn:hover {
-        background: #ff5722;
-    }
-
-    .order {
-        padding: 12px;
-        border-bottom: 1px solid #ddd;
-    }
-    .order:last-child {
-        border-bottom: none;
-    }
+body{margin:0;padding:0;background:#f5f5f5;font-family:Arial;}
+h1{background:#ff3d00;color:white;text-align:center;padding:15px;margin:0;}
+section{background:white;margin:15px;padding:15px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+input,select{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;margin-top:8px;}
+.btn{width:100%;margin-top:10px;padding:14px;background:#ff3d00;border:none;color:white;border-radius:8px;font-size:18px;cursor:pointer;}
+.btn:hover{background:#ff5722;}
+.order{padding:12px;border-bottom:1px solid #ddd;}
+.order:last-child{border-bottom:none;}
 </style>
 </head>
-
 <body>
-
 <h1>Admin</h1>
 
-<!--============ 1. Ajouter un restaurant ============-->
 <section>
-    <h2>Ajouter un restaurant</h2>
-    <input id="restoName" type="text" placeholder="Nom du restaurant">
-    <input id="restoImage" type="text" placeholder="URL de l’image">
-    <button class="btn" onclick="addRestaurant()">Ajouter</button>
-    <div id="restoMsg" style="color:green; margin-top:8px; display:none;">Restaurant ajouté ✔️</div>
+<h2>Ajouter un restaurant</h2>
+<input id="restoName" type="text" placeholder="Nom du restaurant">
+<input id="restoImage" type="text" placeholder="URL de l’image">
+<button class="btn" onclick="addRestaurant()">Ajouter</button>
+<div id="restoMsg" style="color:green;margin-top:8px;display:none;">Restaurant ajouté ✔️</div>
 </section>
 
-<!--============ 2. Ajouter un plat ============-->
 <section>
-    <h2>Ajouter un plat</h2>
-
-    <select id="selectResto"></select>
-
-    <input id="mealName" type="text" placeholder="Nom du plat">
-    <input id="mealPrice" type="number" placeholder="Prix DA">
-    <input id="mealImage" type="text" placeholder="URL de l’image">
-
-    <button class="btn" onclick="addMeal()">Ajouter le plat</button>
-    <div id="mealMsg" style="color:green; margin-top:8px; display:none;">Plat ajouté ✔️</div>
+<h2>Ajouter un plat</h2>
+<select id="selectResto"></select>
+<input id="mealName" type="text" placeholder="Nom du plat">
+<input id="mealPrice" type="number" placeholder="Prix DA">
+<input id="mealImage" type="text" placeholder="URL de l’image">
+<button class="btn" onclick="addMeal()">Ajouter le plat</button>
+<div id="mealMsg" style="color:green;margin-top:8px;display:none;">Plat ajouté ✔️</div>
 </section>
 
-<!--============ 3. Afficher les commandes ============-->
 <section>
-    <h2>Commandes reçues</h2>
-    <div id="orders"></div>
+<h2>Commandes reçues</h2>
+<div id="orders"></div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-    const supabaseUrl = "https://gkzjbvgpfaebzeyygeqw.supabase.co";
-    const supabaseKey = "sb_publishable_2LFLjpYRS3CFK3EhhNsuFw_JiIerz3z";
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseUrl="https://gkzjbvgpfaebzeyygeqw.supabase.co";
+const supabaseKey="sb_publishable_2LFLjpYRS3CFK3EhhNsuFw_JiIerz3z";
+const supabase=supabase.createClient(supabaseUrl,supabaseKey);
 
-    //------ Charger les restaurants dans le select ------
-    async function loadRestaurants() {
-        const { data, error } = await supabase.from("restaurants").select("*");
-
-        const select = document.getElementById("selectResto");
-        select.innerHTML = "";
-
-        data.forEach(r => {
-            const opt = document.createElement("option");
-            opt.value = r.id;
-            opt.textContent = r.name;
-            select.appendChild(opt);
-        });
-    }
-
-    //------ Ajouter restaurant ------
-    async function addRestaurant() {
-        let name = document.getElementById("restoName").value;
-        let image = document.getElementById("restoImage").value;
-
-        if (!name) return;
-
-        await supabase.from("restaurants").insert([
-            { name, image_url: image }
-        ]);
-
-        document.getElementById("restoMsg").style.display = "block";
-        document.getElementById("restoName").value = "";
-        document.getElementById("restoImage").value = "";
-
-        loadRestaurants();
-    }
-
-    //------ Ajouter un plat ------
-    async function addMeal() {
-        let restaurant_id = document.getElementById("selectResto").value;
-        let name = document.getElementById("mealName").value;
-        let price = document.getElementById("mealPrice").value;
-        let image = document.getElementById("mealImage").value;
-
-        if (!name || !price) return;
-
-        await supabase.from("meals").insert([
-            {
-                restaurant_id,
-                name,
-                price,
-                image_url: image
-            }
-        ]);
-
-        document.getElementById("mealMsg").style.display = "block";
-        document.getElementById("mealName").value = "";
-        document.getElementById("mealPrice").value = "";
-        document.getElementById("mealImage").value = "";
-    }
-
-    //------ Charger commandes ------
-    async function loadOrders() {
-        const { data, error } = await supabase
-            .from("orders")
-            .select("*")
-            .order("id", { ascending: false });
-
-        const box = document.getElementById("orders");
-        box.innerHTML = "";
-
-        data.forEach(o => {
-            box.innerHTML += `
-                <div class="order">
-                    <strong>${o.customer_name}</strong><br>
-                    Tel: ${o.customer_phone}<br>
-                    Adresse: ${o.customer_address}<br>
-                    Plat ID: ${o.meal_id}<br>
-                    Restaurant ID: ${o.restaurant_id}<br>
-                    Status: ${o.status}
-                </div>
-            `;
-        });
-    }
-
-    //------ Charger automatiquement ------
-    loadRestaurants();
-    loadOrders();
+async function loadRestaurants(){
+  const {data}=await supabase.from("restaurants").select("*");
+  const select=document.getElementById("selectResto"); select.innerHTML="";
+  data.forEach(r=>{const opt=document.createElement("option");opt.value=r.id;opt.textContent=r.name;select.appendChild(opt);});
+}
+async function addRestaurant(){
+  let name=document.getElementById("restoName").value;
+  let image=document.getElementById("restoImage").value;
+  if(!name)return;
+  await supabase.from("restaurants").insert([{name,image_url:image}]);
+  document.getElementById("restoMsg").style.display="block";
+  document.getElementById("restoName").value="";
+  document.getElementById("restoImage").value="";
+  loadRestaurants();
+}
+async function addMeal(){
+  let restaurant_id=document.getElementById("selectResto").value;
+  let name=document.getElementById("mealName").value;
+  let price=document.getElementById("mealPrice").value;
+  let image=document.getElementById("mealImage").value;
+  if(!name||!price)return;
+  await supabase.from("meals").insert([{restaurant_id,name,price,image_url:image}]);
+  document.getElementById("mealMsg").style.display="block";
+  document.getElementById("mealName").value="";
+  document.getElementById("mealPrice").value="";
+  document.getElementById("mealImage").value="";
+}
+async function loadOrders(){
+  const {data}=await supabase.from("orders").select("*").order("id",{ascending:false});
+  const box=document.getElementById("orders"); box.innerHTML="";
+  data.forEach(o=>{
+    box.innerHTML+=`<div class="order"><strong>${o.customer_name}</strong><br>Tel: ${o.customer_phone}<br>Adresse: ${o.customer_address}<br>Plat ID: ${o.meal_id}<br>Restaurant ID: ${o.restaurant_id}<br>Status: ${o.status}</div>`;
+  });
+}
+loadRestaurants(); loadOrders();
 </script>
-
 </body>
 </html>
