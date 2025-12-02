@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liste des Restaurants</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+  .restaurant-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+  .restaurant {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 200px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s;
+  }
+  .restaurant:hover {
+    transform: scale(1.05);
+  }
+  .restaurant img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+  .restaurant-name {
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+
+<h1>Liste des Restaurants</h1>
+<div class="restaurant-list">
+  <div class="restaurant">
+    <img src="https://via.placeholder.com/200x150?text=Pizza" alt="Pizza">
+    <div class="restaurant-name">Pizza Palace</div>
+  </div>
+  <div class="restaurant">
+    <img src="https://via.placeholder.com/200x150?text=Burger" alt="Burger">
+    <div class="restaurant-name">Burger King</div>
+  </div>
+  <div class="restaurant">
+    <img src="https://via.placeholder.com/200x150?text=Sushi" alt="Sushi">
+    <div class="restaurant-name">Sushi World</div>
+  </div>
+</div>
+
+</body>
+</html>
