@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Menu</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #fafafa;
+        font-family: Arial;
+    }
+    h1 {
+        text-align: center;
+        padding: 15px;
+        background: #ff3d00;
+        color: white;
+        margin: 0;
+        font-size: 26px;
+    }
+    .meal-list {
+        padding: 15px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .meal-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .meal-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+    .meal-info {
+        padding: 10px;
+    }
+    .meal-info h3 {
+        margin: 0 0 8px 0;
+    }
+    .price {
+        font-size: 18px;
+        font-weight: bold;
+        color: #ff3d00;
+    }
+    .btn {
+        width: 100%;
+        margin-top: 10px;
+        padding: 12px;
+        background: #ff3d00;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        transition: 0.3s;
+    }
+    .btn:hover {
+        background: #ff5722;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Menu</h1>
+
+<div class="meal-list" id="meals"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const supabaseUrl = "https://gkzjbvgpfaebzeyygeqw.supabase.co";
+    const supabaseKey = "sb_publishable_2LFLjpYRS3CFK3EhhNsuFw_JiIerz3z";
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // اخذ ID المطعم من الرابط
+    const params = new URLSearchParams(window.location.search);
+    const restaurantId = params.get("id");
+
+    async function loadMeals() {
+        const { data, error } = await supabase
+            .from("meals")
+            .select("*")
+            .eq("restaurant_id", restaurantId);
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        const list = document.getElementById("meals");
+        list.innerHTML = "";
+
+        data.forEach(meal => {
+            const card = document.createElement("div");
+            card.className = "meal-card";
+
+            card.innerHTML = `
+                <img src="${meal.image_url || 'https://i.imgur.com/vT0X8C5.jpeg'}" alt="">
+                <div class="meal-info">
+                    <h3>${meal.name}</h3>
+                    <div class="price">${meal.price} DA</div>
+                    <button class="btn" onclick="order('${meal.id}')">Commander</button>
+                </div>
+            `;
+
+            list.appendChild(card);
+        });
+    }
+
+    function order(mealId) {
+        window.location.href = `checkout.html?meal=${mealId}&resto=${restaurantId}`;
+    }
+
+    loadMeals();
+</script>
+
+</body>
+</html>
