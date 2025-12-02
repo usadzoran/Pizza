@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restaurants</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+        font-family: Arial;
+    }
+    h1 {
+        text-align: center;
+        padding: 15px;
+        background: #ff3d00;
+        color: white;
+        margin: 0;
+        font-size: 26px;
+    }
+    .restaurant-list {
+        padding: 10px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    .restaurant-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+    .restaurant-card img {
+        width: 100%;
+        height: 170px;
+        object-fit: cover;
+    }
+    .restaurant-card h3 {
+        margin: 0;
+        padding: 10px;
+        font-size: 20px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Restaurants</h1>
+
+<div class="restaurant-list" id="restaurants"></div>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const supabaseUrl = "https://gkzjbvgpfaebzeyygeqw.supabase.co";
+    const supabaseKey = "sb_publishable_2LFLjpYRS3CFK3EhhNsuFw_JiIerz3z";
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function loadRestaurants() {
+        const { data, error } = await supabase
+            .from("restaurants")
+            .select("*");
+
+        if (error) {
+            console.error(error);
+            return;
+        }
+
+        const list = document.getElementById('restaurants');
+        list.innerHTML = "";
+
+        data.forEach(resto => {
+            const card = document.createElement("div");
+            card.className = "restaurant-card";
+            card.onclick = () => {
+                window.location.href = `meals.html?id=${resto.id}`;
+            };
+
+            card.innerHTML = `
+                <img src="${resto.image_url || 'https://i.imgur.com/vT0X8C5.jpeg'}" alt="">
+                <h3>${resto.name}</h3>
+            `;
+
+            list.appendChild(card);
+        });
+    }
+
+    loadRestaurants();
+</script>
+
+</body>
+</html>
